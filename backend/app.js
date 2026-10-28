@@ -8,6 +8,7 @@ import routes from './routes/index.js';
 
 const app = express();
 
+app.set('trust proxy', 1); // Vercel proxy-kku pinnaadi irukku
 app.disable('x-powered-by');
 app.use(helmet());
 app.use(cors({ origin: env.clientUrl }));
