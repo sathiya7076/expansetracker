@@ -5,9 +5,9 @@ import AppError from '../utils/AppError.js';
 import { env } from '../config/env.js';
 import { MAX_UPLOAD_BYTES } from '../config/constants.js';
 
-// Vercel-la project folder read-only, so /tmp use pannanum
-export const uploadDir = process.env.VERCEL ? '/tmp/uploads' : env.uploadDir;
+const uploadDir = env.uploadDir;
 
+// Must never crash the whole function at import time.
 try {
   fs.mkdirSync(uploadDir, { recursive: true });
 } catch (err) {

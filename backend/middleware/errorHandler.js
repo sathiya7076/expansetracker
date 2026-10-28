@@ -5,7 +5,7 @@ import { env } from '../config/env.js';
 export const notFound = (req, _res, next) => next(new AppError(`Route not found: ${req.method} ${req.originalUrl}`, 404));
 
 // eslint-disable-next-line no-unused-vars
-export function errorHandler(err, _req, res, _next) {
+export function errorHandler(err, req, res, _next) {
   let status = err.status || 500;
   let message = err.message || 'Server error';
 
@@ -26,9 +26,12 @@ export function errorHandler(err, _req, res, _next) {
     message = 'The request body is not valid JSON.';
   }
 
+  let detail;
   if (status >= 500) {
-    console.error(err);
+    // This line shows up in Vercel -> Logs with the real reason.
+    console.error(`[500] ${req.method} ${req.originalUrl} ->`, err.name, err.message, err.stack);
+    if (env.debugErrors) detail = `${err.name}: ${err.message}`;
     if (env.nodeEnv === 'production') message = 'Something went wrong on our side. Try again.';
   }
-  res.status(status).json({ message });
+  res.status(status).json({ message, ...(detail && { detail }) });
 }

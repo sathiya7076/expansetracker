@@ -18,5 +18,8 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
+  // Vercel's project folder is read-only; /tmp is the only writable place (and it is temporary).
+  uploadDir: process.env.VERCEL ? '/tmp/uploads' : path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
+  // Temporary: set DEBUG_ERRORS=1 in Vercel to see the real error message in API responses.
+  debugErrors: process.env.DEBUG_ERRORS === '1',
 };

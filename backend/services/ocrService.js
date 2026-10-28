@@ -8,7 +8,7 @@ let queue = Promise.resolve();
 async function getWorker() {
   if (!worker) {
     // Language data is downloaded on first use and cached here.
-    worker = await createWorker('eng', 1, { cachePath: path.resolve('.tesseract-cache') });
+    worker = await createWorker('eng', 1, { cachePath: process.env.VERCEL ? '/tmp/.tesseract-cache' : path.resolve('.tesseract-cache') });
   }
   return worker;
 }
