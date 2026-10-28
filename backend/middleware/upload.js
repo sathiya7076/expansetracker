@@ -5,14 +5,22 @@ import AppError from '../utils/AppError.js';
 import { env } from '../config/env.js';
 import { MAX_UPLOAD_BYTES } from '../config/constants.js';
 
-fs.mkdirSync(env.uploadDir, { recursive: true });
+// Vercel-la project folder read-only, so /tmp use pannanum
+export const uploadDir = process.env.VERCEL ? '/tmp/uploads' : env.uploadDir;
+
+try {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} catch (err) {
+  console.error('Upload dir create failed:', err.message);
+}
 
 const EXT = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, env.uploadDir),
+  destination: (_req, _file, cb) => cb(null, uploadDir),
   // Never use the client's file name: <userId>-<random>.<ext>
-  filename: (req, file, cb) => cb(null, `${req.user._id}-${crypto.randomBytes(16).toString('hex')}${EXT[file.mimetype]}`),
+  filename: (req, file, cb) =>
+    cb(null, `${req.user._id}-${crypto.randomBytes(16).toString('hex')}${EXT[file.mimetype]}`),
 });
 
 export default multer({
